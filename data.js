@@ -1,9 +1,10 @@
 const people = [
   {
-    name: "rahul",
+    name: "Rahul",
     city: "pune",
     age: 56,
     hobbies: ["playing chess", "gardening"],
+    books: null,
     pets: [
       {
         name: "max",
@@ -19,10 +20,11 @@ const people = [
   },
 
   {
-    name: "ananya",
+    name: "Ananya",
     city: "Bangalore",
     age: 30,
     hobbies: ["cooking", "experiments with Italian recipes"],
+    books: null,
     pets: [
       {
         name: "kiwi",
@@ -38,10 +40,11 @@ const people = [
   },
 
   {
-    name: "ramesh",
+    name: "Ramesh",
     city: "jaipur",
     age: 45,
     hobbies: ["gardening", "reading historical fiction"],
+    books: ["historical fiction"],
     pets: [
       {
         name: "Bella",
@@ -65,10 +68,11 @@ const people = [
   },
 
   {
-    name: "kavya",
+    name: "Kavya",
     city: "chennai",
     age: 28,
     hobbies: ["modern fantasy novels", " binge-watching sci-fi shows"],
+    books: ["fantasy novels"],
     pets: [
       {
         name: "snowy",
@@ -87,7 +91,7 @@ const people = [
   },
 ];
 
-const pets = (people) => people.flatMap((person) => person.pets);
+const allPets = (people) => people.flatMap((person) => person.pets);
 
 // ------------------------------Question1------------------------------------
 
@@ -102,12 +106,12 @@ const noOfpeopleHavingCar = (people) =>
 // ------------------------------Question3------------------------------------
 
 const noOfPetsFullyVaccinated = (people) =>
-  pets(people).filter((pets) => pets.isVaccinated).length;
+  allPets(people).filter((pets) => pets.isVaccinated).length;
 
 // ------------------------------Question4------------------------------------
 
 const nameOfThePetsAndTypes = (people) =>
-  pets(people).map(({ name, animalType }) => name + " - " + animalType);
+  allPets(people).map(({ name, animalType }) => name + " - " + animalType);
 
 // ------------------------------Question5------------------------------------
 
@@ -162,7 +166,7 @@ const peopleHavingMoreThanOnePet = function (people) {
 // ------------------------------Question11------------------------------------
 
 const petsWithSpecificFavoriteActivities = function (people) {
-  return pets(people)
+  return allPets(people)
     .filter((pet) => pet.favoriteActivities !== null)
     .map((pet) => pet.name);
 };
@@ -204,7 +208,7 @@ const commonPet = function (animal1, animal2) {
 };
 
 const mostCommonTypeOfPet = function (people) {
-  const allPetTypes = pets(people).map(({ animalType }) => animalType);
+  const allPetTypes = allPets(people).map(({ animalType }) => animalType);
   const animalAndCount = Object.entries(allPetTypes.reduce(occurances, {}));
 
   return animalAndCount.reduce(commonPet)[0];
@@ -217,15 +221,35 @@ const noOfIndividualsHaveMoreThan2Hobbies = (people) =>
 
 // ------------------------------Question16------------------------------------
 
+const individualsShareAtLeast1HobbyWithRamesh = function (people) {
+  const rameshHobbies = people
+    .filter(({ name }) => name === "Ramesh")
+    .flatMap(({ hobbies }) => hobbies);
+
+  const remainigPersonsHobbies = people
+    .filter(({ name }) => name !== "Ramesh")
+    .flatMap(({ hobbies }) => hobbies);
+
+  return remainigPersonsHobbies.reduce(
+    (count, hobby) => (rameshHobbies.includes(hobby) ? count + 1 : count),
+    0
+  );
+};
+
 // ------------------------------Question17------------------------------------
 
 const youngestPet = (people) => {
-  return pets(people).reduce((pet1, pet2) =>
+  return allPets(people).reduce((pet1, pet2) =>
     pet1.age < pet2.age ? pet1 : pet2
   ).name;
 };
 
 // ------------------------------Question18------------------------------------
+const typesOfBooks = function (people) {
+  return people
+    .filter((people) => people.books !== null)
+    .flatMap(({ books, name }) => [books + " reads " + name]);
+};
 
 // ------------------------------Question19------------------------------------
 
@@ -296,7 +320,15 @@ const questionsAndAnswers = [
     "15. How many individuals have more than two hobbies?":
       noOfIndividualsHaveMoreThan2Hobbies,
   },
+  {
+    "16. How many individuals share at least one hobby with Ramesh?":
+      individualsShareAtLeast1HobbyWithRamesh,
+  },
   { "17. Which pet is the youngest, and what is its name?": youngestPet },
+  {
+    "18. What types of books are mentioned as interests who reads them?":
+      typesOfBooks,
+  },
   {
     '19. How many individuals live in cities starting with the letter "B"?':
       individualsLiveInCitiesStartingWithLetterB,
@@ -304,13 +336,13 @@ const questionsAndAnswers = [
   { "20. Which individuals do not own any pets?": individualsNotHavingOwnPets },
 ];
 
-const printQuestion = function ([[question, answer]], param) {
+const printQuestionAndAnswers = function ([[question, answer]], param) {
   console.log(question, answer(param));
 };
 
 const testAll = function (people) {
   questionsAndAnswers.map((question) =>
-    printQuestion(Object.entries(question), people)
+    printQuestionAndAnswers(Object.entries(question), people)
   );
 };
 
